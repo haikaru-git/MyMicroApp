@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Play.Catalog.Service.Models;
+using Play.Catalog.Service.Dtos;
 
 namespace Play.Catalog.Service.Controllers
 {
