@@ -11,12 +11,10 @@ ServiceSettings serviceSettings;
 var configuration = builder.Configuration;
 
 // Add services to the container.
-
-
-BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-
 serviceSettings = configuration.GetSection("ServiceSettings").Get<ServiceSettings>(); // "Catalog" db
+
+builder.AddMongo()
+    .AddMongoRepository<Item>("items");
 
 builder.Services.AddControllers(options =>
 {
@@ -28,17 +26,6 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton(serviceProvider =>
-{
-    var mongoDbSettings = configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
-    var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
-    return mongoClient.GetDatabase((serviceSettings.ServiceName));
-});
-builder.Services.AddSingleton<IRepository<Item>>(serviceProvider =>
-{
-    var database = serviceProvider.GetService<IMongoDatabase>();
-    return new MongoRepository<Item>(database, "items");
-});
 
 var app = builder.Build();
 
