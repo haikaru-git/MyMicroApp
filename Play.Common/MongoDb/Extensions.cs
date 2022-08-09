@@ -1,11 +1,15 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using Play.Catalog.Service.Entities;
-using Play.Catalog.Service.Settings;
+using Play.Common.Entities;
+using Play.Common.Repositories;
+using Play.Common.Settings;
 
-namespace Play.Catalog.Service.Repositories
+namespace Play.Common.MongoDb
 {
     public static class Extensions
     {

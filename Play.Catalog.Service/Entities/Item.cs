@@ -1,4 +1,6 @@
-﻿namespace Play.Catalog.Service.Entities
+﻿using Play.Common.Entities;
+
+namespace Play.Catalog.Service.Entities
 {
     public class Item : IEntity
     {
