@@ -11,3 +11,5 @@ dotnet nuget add source C:\Users\HAIKAL\source\repos\MyMicroApp\Packages -n Play
 cd "C:\Program Files\Docker\Docker" ./DockerCli.exe -SwitchDaemon
 
 docker-compose up -d (run docker on background)
+
+dotnet new webapi -n Play.Inventory.Service --framework net6.0

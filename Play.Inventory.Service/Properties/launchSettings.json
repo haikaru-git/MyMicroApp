@@ -4,17 +4,17 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:8900",
-      "sslPort": 44362
+      "applicationUrl": "http://localhost:23745",
+      "sslPort": 44321
     }
   },
   "profiles": {
-    "Play.Catalog.Service": {
+    "Play.Inventory.Service": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "applicationUrl": "https://localhost:5003;http://localhost:5002",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
