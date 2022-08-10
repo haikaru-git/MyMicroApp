@@ -1,0 +1,17 @@
+#docker run -d --rm --name mongocontainer -p 27017:27017 -v mongodbdata:/data/db mongo
+
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongocontainer
+    ports:
+    - 27017:27017
+    volumes:
+    - mongodbdata:/data/db
+
+volumes:
+  mongodbdata:
+    external: true
+    name: mongodbdata

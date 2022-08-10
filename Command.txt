@@ -1,0 +1,13 @@
+docker run -d --rm --name mongocontainer -p 27017:27017 -v mongodbdata:/data/db mongo
+
+docker ps
+
+dotnet new classlib -n Play.Common --framework net6.0
+
+dotnet pack -o ../Packages
+
+dotnet nuget add source C:\Users\HAIKAL\source\repos\MyMicroApp\Packages -n PlayEconomy
+
+cd "C:\Program Files\Docker\Docker" ./DockerCli.exe -SwitchDaemon
+
+docker-compose up -d (run docker on background)
