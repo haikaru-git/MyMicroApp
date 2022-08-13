@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Play.Catalog.Contracts;
 using Play.Catalog.Service.Dtos;
 using Play.Catalog.Service.Entities;
 using Play.Common.Repositories;
@@ -10,34 +12,22 @@ namespace Play.Catalog.Service.Controllers
     [Route("items")]
     public class ItemsController : ControllerBase
     {
-        private readonly IRepository<Item> _repository;
-        private static int requesCounter = 0;
+        private readonly IRepository<Item> _itemRepository;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public ItemsController(IRepository<Item> repository)
+        public ItemsController(IRepository<Item> itemRepository, IPublishEndpoint publishEndpoint)
         {
-            _repository = repository;
+            _itemRepository = itemRepository;
+            _publishEndpoint = publishEndpoint;
         }
         
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemDto>>> GetAsync()
         {
-            requesCounter++;
-            Console.WriteLine($"Request {requesCounter}: Starting...");
-            if (requesCounter <= 2)
-            {
-                Console.WriteLine($"Request {requesCounter}: Delaying...");
-                await Task.Delay(TimeSpan.FromSeconds(10));
-            }            
-            if (requesCounter <= 4)
-            {
-                Console.WriteLine($"Request {requesCounter}: 500 (Internal Server Error)");
-                return  StatusCode(500);
-            }
-
-
-            var items = (await _repository.GetAllAsync())
+           
+            var items = (await _itemRepository.GetAllAsync())
                 .Select(item => item.AsDto());
-            Console.WriteLine($"Request {requesCounter}: 200 (OK)");
+
             return Ok(items);
         }
 
@@ -45,7 +35,7 @@ namespace Play.Catalog.Service.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDto>> GetByIdAsync(Guid id)
         {
-            var item = await _repository.GetAsync(id);
+            var item = await _itemRepository.GetAsync(id);
 
             if (item == null)
             {
@@ -66,7 +56,9 @@ namespace Play.Catalog.Service.Controllers
                 Price = createItemDto.Price,
                 CreatedDate = DateTimeOffset.UtcNow
             };
-            await _repository.CreateAsync(item);
+            await _itemRepository.CreateAsync(item);
+
+            await _publishEndpoint.Publish(new CatalogItemCreated(item.Id, item.Name, item.Description));
 
             return CreatedAtAction(nameof(GetByIdAsync), new { id = item.Id }, item);
             
@@ -76,7 +68,7 @@ namespace Play.Catalog.Service.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync(Guid id, UpdateItemDto updateItemDto)
         {
-            var existingItem = await _repository.GetAsync(id);
+            var existingItem = await _itemRepository.GetAsync(id);
 
             if (existingItem is null)
             {
@@ -87,7 +79,10 @@ namespace Play.Catalog.Service.Controllers
             existingItem.Description = updateItemDto.Description;
             existingItem.Price = updateItemDto.Price;
 
-            await _repository.UpdateAsync(existingItem);
+            await _itemRepository.UpdateAsync(existingItem);
+
+            await _publishEndpoint.Publish(new CatalogItemUpdated(existingItem.Id, existingItem.Name, existingItem.Description));
+
 
             return NoContent();
         }
@@ -96,14 +91,16 @@ namespace Play.Catalog.Service.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var item = await _repository.GetAsync(id);
+            var item = await _itemRepository.GetAsync(id);
 
             if (item is null)
             {
                 return NotFound();
             }
 
-            await _repository.RemoveAsync(item.Id);
+            await _itemRepository.RemoveAsync(item.Id);
+
+            await _publishEndpoint.Publish(new CatalogItemDeleted(id));
 
             return NoContent();
         }
