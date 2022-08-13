@@ -4,12 +4,19 @@ using Play.Inventory.Service.Entities;
 using Polly;
 using Polly.Timeout;
 using System;
+using Play.Common.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.AddMongo()
-    .AddMongoRepository<InventoryItem>("inventoryitems");
+    .AddMongoRepository<InventoryItem>("inventoryitems")
+    .AddMongoRepository<CatalogItem>("catalogitems")
+    .AddMassTransitWithRabbitMq();
+
+#region AddCatalogClient
+
+
 Random jitterer = new Random();
 
 builder.Services.AddHttpClient<CatalogClient>(client =>
@@ -43,6 +50,7 @@ builder.Services.AddHttpClient<CatalogClient>(client =>
         }
         ))
     .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(1));
+#endregion AddCatalogClient
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
