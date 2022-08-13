@@ -28,7 +28,7 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-builder.Services.AddMassTransitHostedService();
+//builder.Services.AddMassTransitHostedService();
 
 builder.Services.AddControllers(options =>
 {
