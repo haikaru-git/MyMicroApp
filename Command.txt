@@ -15,3 +15,4 @@ docker-compose up -d (run docker on background)
 dotnet new webapi -n Play.Inventory.Service --framework net6.0
 
 dotnet pack -p:PackageVersion=1.0.1 -o ../Packages
+dotnet pack -p:PackageVersion=1.0.2 -o ../Packages
